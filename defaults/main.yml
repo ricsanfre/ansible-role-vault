@@ -30,6 +30,7 @@ vault_log_level: "{{ lookup('env', 'VAULT_LOG_LEVEL') | default('info', true) }}
 
 # Enable tls
 vault_enable_tls: false
+custom_ca: false
 
 vault_port: 8200
 vault_protocol: "{% if vault_enable_tls %}https{% else %}http{% endif %}"

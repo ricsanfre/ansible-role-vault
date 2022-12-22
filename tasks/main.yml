@@ -89,6 +89,17 @@
   when: vault_enable_tls
   notify: Restart vault
 
+- name: Copy CA cert file
+  copy:
+    dest: "{{ vault_tls_path }}/vault-ca.crt"
+    content: "{{ vault_ca }}"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: 0644
+  become: true
+  when: vault_enable_tls and custom_ca
+  notify: Restart vault
+
 - name: Create the Vault server systemd config
   template:
     src: vault.service.j2
