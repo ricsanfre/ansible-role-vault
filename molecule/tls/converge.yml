@@ -32,9 +32,10 @@
       set_fact:
         vault_key: "{{ lookup('file', 'certificates/' + server_hostname + '.key') }}"
         vault_cert: "{{ lookup('file', 'certificates/' + server_hostname + '.pem') }}"
-        ca_cert: "{{ lookup('file', 'certificates/CA.pem') }}"
+        vault_ca: "{{ lookup('file', 'certificates/CA.pem') }}"
 
   roles:
     - role: ricsanfre.vault
       vault_enable_tls: true
       custom_ca: true
+      vault_listener_localhost_enable: true
