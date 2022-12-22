@@ -1,3 +1,4 @@
+---
 - name: Ensure unzip package is installed
   package:
     name: '{{ vault_package_list | list }}'
@@ -46,5 +47,5 @@
     path: "{{ item }}"
     state: "absent"
   with_items:
-   - "/tmp/vault"
-   - "/tmp/{{ vault_pkg }}"
+    - "/tmp/vault"
+    - "/tmp/{{ vault_pkg }}"

@@ -1,0 +1,5 @@
+---
+skip_list:
+  - 'no-handler'
+  - 'fqcn-builtins'
+  - 'template-instead-of-copy'

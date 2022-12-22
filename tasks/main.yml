@@ -1,3 +1,4 @@
+---
 - name: Create vault group
   group:
     name: "{{ vault_group }}"

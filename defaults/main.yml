@@ -1,3 +1,4 @@
+---
 # Vault unix user
 vault_group: vault
 vault_user: vault
