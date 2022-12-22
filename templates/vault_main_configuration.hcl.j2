@@ -1,0 +1,27 @@
+cluster_addr  = "{{ vault_cluster_url }}"
+api_addr      = "{{ vault_api_url }}"
+
+plugin_directory = "{{ vault_plugin_path }}"
+
+disable_mlock = true
+
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+
+{% if vault_enable_tls %}
+  tls_cert_file      = "{{ vault_tls_path }}/vault.crt"
+  tls_key_file       = "{{ vault_tls_path }}/vault.key"
+  tls_client_ca_file = "{{ vault_tls_path }}/vault-ca.crt"
+{% else %}
+  tls_disable = true
+{% endif %}
+}
+
+storage "raft" {
+  path    = "{{ vault_data_path }}"
+
+}
+
+{% if vault_custom_configuration is defined %}
+{{ vault_custom_configuration }}
+{% endif %}

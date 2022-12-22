@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  role_name: vault
+  author: ricsanfre
+  description: Vault hashicorp installation and configuration role
+
+  license: license (MIT)
+
+  min_ansible_version: "2.11"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+
+  galaxy_tags:
+    - system
+    - vault
+    - secrets
+
+dependencies: []

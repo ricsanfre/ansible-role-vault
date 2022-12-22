@@ -1,0 +1,106 @@
+- name: Create vault group
+  group:
+    name: "{{ vault_group }}"
+    state: present
+
+- name: Create vault user
+  user:
+    name: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    system: "yes"
+    shell: "/usr/sbin/nologin"
+
+- name: Check Vault installation
+  shell: command -v vault  # noqa command-instead-of-shell  # command is a shell builtin
+  environment:
+    PATH: "{{ vault_bin_path }}:{{ ansible_env.PATH }}"
+  register: vault_installation
+  changed_when: false
+  ignore_errors: true
+  check_mode: false
+
+- name: Get installed Vault version
+  shell: |
+    set -o pipefail
+    {{ vault_installation.stdout }} -version | cut -d' ' -f2 | tr -d 'v'
+  args:
+    executable: /bin/bash
+  when: not vault_installation is failed
+  changed_when: false
+  check_mode: false
+  register: installed_vault_version
+
+- name: Compute if installation is required
+  set_fact:
+    installation_required: "{{ vault_installation is failed or installed_vault_version.stdout != vault_version }}"
+
+- name: Install vault binary
+  include_tasks: install_vault.yml
+  when: installation_required
+
+- name: Create directories
+  become: true
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: 0750
+  with_items:
+    - "{{ vault_config_path }}"
+    - "{{ vault_tls_path }}"
+    - "{{ vault_plugin_path }}"
+    - "{{ vault_data_path }}"
+    - "{{ vault_log_path }}"
+    - "{{ vault_run_path }}"
+
+- name: Vault main configuration
+  become: true
+  template:
+    src: "vault_main_configuration.hcl.j2"
+    dest: "{{ vault_main_config }}"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: "0400"
+    backup: "true"
+  notify:
+    - Restart vault
+    - Reload vault systemd
+
+- name: Copy TLS private key file
+  copy:
+    dest: "{{ vault_tls_path }}/vault.key"
+    content: "{{ vault_key }}"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: 0644
+  become: true
+  when: vault_enable_tls
+  notify: Restart vault
+
+- name: Copy cert file
+  copy:
+    dest: "{{ vault_tls_path }}/vault.crt"
+    content: "{{ vault_cert }}"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: 0644
+  become: true
+  when: vault_enable_tls
+  notify: Restart vault
+
+- name: Create the Vault server systemd config
+  template:
+    src: vault.service.j2
+    dest: "/etc/systemd/system/vault.service"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  notify:
+    - Reload vault systemd
+    - Restart vault
+
+- name: Ensure vault is started at boot
+  service:
+    name: vault
+    enabled: true

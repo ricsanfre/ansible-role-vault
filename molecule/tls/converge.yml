@@ -1,0 +1,28 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: true
+  environment:
+    http_proxy: "http://10.201.0.1:4567"
+    https_proxy: "http://10.201.0.1:4567"
+  vars:
+    server_hostname: vault.ricsanfre.com
+    ssl_key_size: 4096
+    ssl_certificate_provider: selfsigned
+
+  pre_tasks:
+    - name: Generate self-signed SSL certificates for minio
+      include_tasks: tasks/generate_selfsigned_cert.yml
+      args:
+        apply:
+          delegate_to: localhost
+          become: false
+    - name: Load tls key and cert
+      set_fact:
+        vault_key: "{{ lookup('file', 'certificates/' + inventory_hostname + '_private.key') }}"
+        vault_cert: "{{ lookup('file', 'certificates/' + inventory_hostname + '_public.crt') }}"
+
+  roles:
+    - role: ricsanfre.vault
+      vault_enable_tls: true

@@ -1,0 +1,11 @@
+---
+
+- name: Reload vault systemd
+  systemd:
+    name: vault
+    daemon_reload: true
+
+- name: Restart vault
+  service:
+    name: vault
+    state: restarted

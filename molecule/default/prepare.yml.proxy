@@ -1,0 +1,12 @@
+---
+
+- name: Prepare the Molecule Test Resources
+  hosts: instance
+  tasks:
+    # Add proxy configuration
+    - name: Configure apt proxy
+      copy:
+        dest: "/etc/apt/apt.conf.d/100proxy.conf"
+        content: |
+          Acquire::http::proxy "http://10.201.0.1:4567/";
+          Acquire::https::proxy "http://10.201.0.1:4567/";

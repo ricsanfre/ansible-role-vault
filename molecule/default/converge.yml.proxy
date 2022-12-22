@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: true
+  environment:
+    http_proxy: "http://10.201.0.1:4567"
+    https_proxy: "http://10.201.0.1:4567"
+  roles:
+    - role: ricsanfre.vault
