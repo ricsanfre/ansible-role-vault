@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-KEY=
 URL=https://127.0.0.1:8200
+KEYS_FILE=/etc/vault/unseal.json
 
 echo "Starting unsealer"
 while true
@@ -11,8 +11,9 @@ do
     then
         echo "Unsealing"
         # Get keys from json file
-        # TODO         
-        curl -s --request PUT --data "{\"key\": \"$KEY\"}" $URL/v1/sys/unseal
+        for i in `jq -r '.keys[]' $KEYS_FILE` 
+          do curl -s --request PUT --data "{\"key\": \"$i\"}" $URL/v1/sys/unseal
+        done
     fi
     sleep 10
 done
