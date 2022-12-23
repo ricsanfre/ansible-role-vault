@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Vault Unseal
+After=vault.service
+Requires=vault.service
+PartOf=vault.service
+
+[Service]
+Type=oneshot
+User={{ vault_user }}
+ExecStartPre=/bin/sleep 10
+ExecStart=/bin/sh -c '/etc/vault/vault-unseal.sh'
+RemainAfterExit=false
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target vault.service

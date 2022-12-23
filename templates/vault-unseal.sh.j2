@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+KEY=
+URL=https://127.0.0.1:8200
+
+echo "Starting unsealer"
+while true
+do
+    status=$(curl -s $URL/v1/sys/seal-status | jq '.sealed')
+    if [ true = "$status" ]
+    then
+        echo "Unsealing"
+        # Get keys from json file
+        # TODO         
+        curl -s --request PUT --data "{\"key\": \"$KEY\"}" $URL/v1/sys/unseal
+    fi
+    sleep 10
+done
