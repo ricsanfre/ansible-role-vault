@@ -28,6 +28,7 @@ platforms:
     env:
       http_proxy: http://10.201.0.1:4567
       https_proxy: http://10.201.0.1:4567
+      no_proxy: vault.ricsanfre.com
 provisioner:
   name: ansible
   playbooks:

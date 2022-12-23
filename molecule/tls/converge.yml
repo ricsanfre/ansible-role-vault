@@ -13,6 +13,7 @@
     country_name: ES
     email_address: admin@ricsanfre.com
     organization_name: Ricsanfre
+    ansible_user: root
 
   pre_tasks:
     - name: Generate custom CA
@@ -39,3 +40,25 @@
       vault_enable_tls: true
       custom_ca: true
       vault_listener_localhost_enable: true
+
+  tasks:
+
+    - name: Insert http(s) export in dotfile
+      become: true
+      lineinfile:
+        path: ~{{ ansible_user }}/.bashrc
+        regexp: "^export VAULT_ADDR="
+        line: "export VAULT_ADDR='https://vault.ricsanfre.com:8200'"
+        owner: "{{ ansible_user }}"
+        create: true
+        mode: 0644
+
+    - name: Insert CA cert export in dotfile
+      become: true
+      lineinfile:
+        path: ~{{ ansible_user }}/.bashrc
+        regexp: "^export VAULT_CACERT="
+        line: "export VAULT_CACERT=/etc/vault/tls/vault-ca.crt"
+        owner: "{{ ansible_user }}"
+        create: true
+        mode: 0644

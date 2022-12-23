@@ -11,9 +11,7 @@ listener "tcp" {
 {% if vault_enable_tls %}
   tls_cert_file      = "{{ vault_tls_path }}/vault.crt"
   tls_key_file       = "{{ vault_tls_path }}/vault.key"
-  {% if custom_ca %}
-  tls_client_ca_file = "{{ vault_tls_path }}/vault-ca.crt"
-  {% endif %}
+  tls_disable_client_certs = true
 {% else %}
   tls_disable = true
 {% endif %}
