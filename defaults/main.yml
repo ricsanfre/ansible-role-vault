@@ -39,3 +39,12 @@ vault_address: "{{ hostvars[inventory_hostname]['ansible_' + vault_iface]['ipv4'
 vault_cluster_address: "{{ vault_address }}:{{ (vault_port | int) + 1 }}"
 vault_cluster_url: "{{ vault_protocol }}://{{ vault_cluster_address }}"
 vault_api_url: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostvars[inventory_hostname]['ansible_' + vault_iface]['ipv4']['address']) }}:{{ vault_port }}"
+
+# Initialize vault
+vault_init: false
+vault_unseal: false
+tls_skip_verify: false
+vault_key_shares: 1
+vault_key_threshold: 1
+vault_keys_output: "{{ vault_config_path }}/unseal.json"
+display_init_response: false

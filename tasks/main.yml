@@ -116,3 +116,14 @@
   service:
     name: vault
     enabled: true
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Initialize Vault
+  include_tasks: initialize_vault.yml
+  when: vault_init
+
+- name: Useal Vault
+  include_tasks: unseal_vault.yml
+  when: vault_unseal
