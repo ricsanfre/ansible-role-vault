@@ -15,8 +15,13 @@
   register: vault_health_response
   run_once: true
 
-- block:
-    - name: Initialize vault
+- name: Initialize vault
+  no_log: false
+  run_once: true
+  when:
+    - vault_health_response.status == 501
+  block:
+    - name: Vault Init
       uri:
         url: "{{ vault_enable_tls | ternary('https', 'http') }}://{{ inventory_hostname }}:8200/v1/sys/init"
         body:
@@ -49,7 +54,3 @@
       debug:
         msg: "Vault keys: {{ vault_keys }}"
       when: display_init_response | bool
-  no_log: false
-  run_once: true
-  when:
-    - vault_health_response.status == 501
