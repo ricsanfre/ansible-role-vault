@@ -1,19 +1,50 @@
 #!/usr/bin/env sh
 
+#Define a timestamp function
+timestamp() {
+date "+%b %d %Y %T %Z"
+}
+
+
 URL=https://127.0.0.1:8200
 KEYS_FILE=/etc/vault/unseal.json
 
-echo "Starting unsealer"
-while true
-do
-    status=$(curl -s $URL/v1/sys/seal-status | jq '.sealed')
+LOG={{ vault_log }}
+
+SKIP_TLS_VERIFY={{ tls_skip_verify | ternary("true", "false") }}
+
+if [ true = "$SKIP_TLS_VERIFY" ]
+then
+  CURL_PARAMS="-sk"
+else
+  CURL_PARAMS="-s"
+fi
+
+# Add timestamp
+echo "$(timestamp): Vault-useal started" | tee -a $LOG
+echo "-------------------------------------------------------------------------------" | tee -a $LOG
+
+initialized=$(curl $CURL_PARAMS $URL/v1/sys/health | jq '.initialized')
+
+if [ true = "$initialized" ]
+then
+  echo "$(timestamp): Vault already initialized" | tee -a $LOG
+  while true
+  do
+    status=$(curl $CURL_PARAMS $URL/v1/sys/health | jq '.sealed')
     if [ true = "$status" ]
     then
-        echo "Unsealing"
+        echo "$(timestamp): Vault Sealed. Trying to unseal" | tee -a $LOG
         # Get keys from json file
         for i in `jq -r '.keys[]' $KEYS_FILE` 
-          do curl -s --request PUT --data "{\"key\": \"$i\"}" $URL/v1/sys/unseal
+          do curl $CURL_PARAMS --request PUT --data "{\"key\": \"$i\"}" $URL/v1/sys/unseal
         done
-    fi
     sleep 10
-done
+    else
+        echo "$(timestamp): Vault unsealed" | tee -a $LOG
+        break
+    fi
+  done
+else
+  echo "$(timestamp): Vault not initialized yet"
+fi

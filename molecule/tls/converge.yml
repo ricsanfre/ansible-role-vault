@@ -3,9 +3,6 @@
   hosts: all
   become: true
   gather_facts: true
-  environment:
-    http_proxy: "http://10.201.0.1:4567"
-    https_proxy: "http://10.201.0.1:4567"
   vars:
     server_hostname: vault.ricsanfre.com
     ssl_key_size: 4096
@@ -42,6 +39,7 @@
       vault_listener_localhost_enable: true
       vault_init: true
       vault_unseal: true
+      vault_unseal_service: true
       tls_skip_verify: true
       display_init_response: true
 

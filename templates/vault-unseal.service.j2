@@ -9,11 +9,10 @@ PartOf=vault.service
 [Service]
 Type=oneshot
 User={{ vault_user }}
+Group={{ vault_group }}
 ExecStartPre=/bin/sleep 10
 ExecStart=/bin/sh -c '/etc/vault/vault-unseal.sh'
 RemainAfterExit=false
-StandardOutput=syslog
-StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target vault.service

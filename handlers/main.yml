@@ -5,6 +5,11 @@
     name: vault
     daemon_reload: true
 
+- name: Reload vault-unseal systemd
+  systemd:
+    name: vault-unseal
+    daemon_reload: true
+
 - name: Restart vault
   service:
     name: vault

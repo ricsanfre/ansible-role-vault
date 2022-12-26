@@ -18,11 +18,10 @@ vault_tls_path: /etc/vault/tls
 vault_plugin_path: /usr/local/lib/vault/plugins
 vault_data_path: /var/lib/vault
 vault_log_path: /var/log/vault
-vault_run_path: /var/run/vault
-vault_home: "/home/{{ vault_user }}"
 
 # Vautl config
 vault_main_config: "{{ vault_config_path }}/vault_main.hcl"
+vault_log: "{{ vault_log_path }}/vault.log"
 vault_http_proxy: ""
 vault_https_proxy: ""
 vault_no_proxy: ""
@@ -30,7 +29,10 @@ vault_log_level: "{{ lookup('env', 'VAULT_LOG_LEVEL') | default('info', true) }}
 
 # Enable tls
 vault_enable_tls: false
+vault_key: ""
+vault_cert: ""
 custom_ca: false
+vault_ca: ""
 
 vault_port: 8200
 vault_protocol: "{% if vault_enable_tls %}https{% else %}http{% endif %}"
@@ -42,9 +44,12 @@ vault_api_url: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostv
 
 # Initialize vault
 vault_init: false
-vault_unseal: false
 tls_skip_verify: false
 vault_key_shares: 1
 vault_key_threshold: 1
 vault_keys_output: "{{ vault_config_path }}/unseal.json"
 display_init_response: false
+
+# Unseal vautl and install vault unseal service
+vault_unseal: false
+vault_unseal_service: false

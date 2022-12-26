@@ -53,7 +53,6 @@
     - "{{ vault_plugin_path }}"
     - "{{ vault_data_path }}"
     - "{{ vault_log_path }}"
-    - "{{ vault_run_path }}"
 
 - name: Vault main configuration
   become: true
@@ -127,3 +126,7 @@
 - name: Useal Vault
   include_tasks: unseal_vault.yml
   when: vault_unseal
+
+- name: Install unseal service
+  include_tasks: install_unseal_service.yml
+  when: vault_unseal_service
