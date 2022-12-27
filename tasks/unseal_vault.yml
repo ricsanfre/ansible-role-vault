@@ -3,7 +3,7 @@
 
 - name: Check if vault is sealed
   uri:
-    url: "{{ vault_enable_tls | ternary('https', 'http') }}://{{ inventory_hostname }}:8200/v1/sys/health"
+    url: "{{ vault_enable_tls | ternary('https', 'http') }}://{{ vault_hostname }}:8200/v1/sys/health"
     validate_certs: "{{ tls_skip_verify | ternary('false', 'true') }}"
     status_code: 200,429,472,501,503
   register: vault_health_response
@@ -11,7 +11,7 @@
 
 - name: Unseal vault
   uri:
-    url: "{{ vault_enable_tls | ternary('https', 'http') }}://{{ inventory_hostname }}:8200/v1/sys/unseal"
+    url: "{{ vault_enable_tls | ternary('https', 'http') }}://{{ vault_hostname }}:8200/v1/sys/unseal"
     body:
       key: "{{ item }}"
     body_format: json
