@@ -6,7 +6,7 @@ date "+%b %d %Y %T %Z"
 }
 
 
-URL=https://127.0.0.1:8200
+URL={{ vault_enable_tls | ternary('https', 'http') }}://{{ vault_hostname }}:8200
 KEYS_FILE=/etc/vault/unseal.json
 
 LOG={{ vault_log }}

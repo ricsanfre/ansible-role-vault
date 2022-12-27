@@ -45,11 +45,15 @@ Available variables are listed below along with default values (see `defaults\ma
   vault_cert: ""
   custom_ca: false
   vault_ca: ""
+  # vault service dns
+  vault_dns: ""
   ```
 
   To enable configuration of TLS set `vault_enable_tls` to true and provide the private key and public certificate as content loaded into `vault_key` and `vault_cert` variables.
 
   if custom CA has been used to sign the TLS certificates, `custom_ca` need to be set to true, and CA certificate need to be loaded int `vault-ca` variable.
+
+  Set `vault_dns` to FQDN of vault service used to issue the Certificate.
 
   They can be loaded from files using an ansible task like:
 
