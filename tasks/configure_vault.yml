@@ -1,0 +1,43 @@
+---
+
+- name: Load root token from file
+  command: "jq -r '.root_token' {{ vault_keys_output }}"
+  register: root_token
+  become: true
+  changed_when: false
+  when: vault_root_token is not defined
+
+- name: Set token variable
+  set_fact:
+    vault_root_token: "{{ root_token.stdout }}"
+  when: vault_root_token is not defined
+
+- name: Get status of kv secrets engine
+  ansible.builtin.uri:
+    url: "{{ vault_api_dns_url }}/v1/sys/mounts"
+    method: GET
+    headers:
+      X-Vault-Token: "{{ vault_root_token }}"
+    validate_certs: "{{ tls_skip_verify | ternary('false', 'true') }}"
+  failed_when:
+    - false
+  register: vault_status_kv_secrets_engine
+
+- name: Enable kv secrets engine
+  ansible.builtin.uri:
+    url: "{{ vault_api_dns_url }}/v1/sys/mounts/{{ vault_kv_secrets.path }}"
+    method: POST
+    headers:
+      X-Vault-Token: "{{ vault_root_token }}"
+    body:
+      type: kv
+      description: "key/value secret storage"
+      options:
+        version: 2
+    body_format: json
+    validate_certs: "{{ tls_skip_verify | ternary('false', 'true') }}"
+    status_code:
+      - 200
+      - 204
+  when:
+    - 'vault_kv_secrets.path + "/" not in vault_status_kv_secrets_engine.json.data'

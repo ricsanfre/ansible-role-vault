@@ -51,6 +51,7 @@
     - "{{ vault_config_path }}"
     - "{{ vault_tls_path }}"
     - "{{ vault_plugin_path }}"
+    - "{{ vault_policy_path }}"
     - "{{ vault_data_path }}"
     - "{{ vault_log_path }}"
 
@@ -130,3 +131,9 @@
 - name: Install unseal service
   include_tasks: install_unseal_service.yml
   when: vault_unseal_service
+
+- name: Run configuration tasks
+  ansible.builtin.include_tasks:
+    file: configure_vault.yml
+  when:
+    - vault_kv_secrets is defined

@@ -42,7 +42,7 @@
       vault_unseal: true
       vault_unseal_service: true
       tls_skip_verify: true
-      display_init_response: true
+      display_init_response: false
 
   tasks:
 
