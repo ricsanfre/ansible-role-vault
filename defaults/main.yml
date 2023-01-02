@@ -59,7 +59,19 @@ display_init_response: false
 vault_unseal: false
 vault_unseal_service: false
 
-# Configure KV
+# # Configure KV
+# vault_kv_secrets:
+#   path: secret
 
-vault_kv_secrets:
-  path: secrets
+# # Policies
+# policies:
+#   - name: write
+#     hcl: |
+#       path "secret/*" {
+#         capabilities = [ "create", "read", "update", "delete", "list", "patch" ]
+#       }
+#   - name: read
+#     hcl: |
+#       path "secret/*" {
+#         capabilities = [ "read" ]
+#       }

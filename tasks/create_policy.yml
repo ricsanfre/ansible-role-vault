@@ -1,0 +1,36 @@
+---
+
+- name: Test policies
+  ansible.builtin.assert:
+    that:
+      - policy.name is defined
+      - policy.hcl is defined
+    quiet: true
+
+- name: Get status of policy
+  ansible.builtin.uri:
+    url: "{{ vault_api_dns_url }}/v1/sys/policy"
+    method: GET
+    headers:
+      X-Vault-Token: "{{ vault_root_token }}"
+    validate_certs: "{{ tls_skip_verify | ternary('false', 'true') }}"
+  failed_when:
+    - false
+  register: vault_policies
+
+- name: Create policy
+  ansible.builtin.uri:
+    url: "{{ vault_api_dns_url }}/v1/sys/policy/{{ policy.name }}"
+    method: POST
+    headers:
+      X-Vault-Token: "{{ vault_root_token }}"
+    body:
+      name: "{{ policy.name }}"
+      policy: "{{ policy.hcl }}"
+    body_format: json
+    validate_certs: "{{ tls_skip_verify | ternary('false', 'true') }}"
+    status_code:
+      - 200
+      - 204
+  when:
+    - 'policy.name not in vault_policies.json.data'

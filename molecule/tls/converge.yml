@@ -43,7 +43,22 @@
       vault_unseal_service: true
       tls_skip_verify: true
       display_init_response: false
+      # Configure KV
+      vault_kv_secrets:
+        path: secret
 
+      # Policies
+      policies:
+        - name: write
+          hcl: |
+            path "secret/*" {
+              capabilities = [ "create", "read", "update", "delete", "list", "patch" ]
+            }
+        - name: read
+          hcl: |
+            path "secret/*" {
+              capabilities = [ "read" ]
+            }
   tasks:
 
     - name: Insert http(s) export in dotfile

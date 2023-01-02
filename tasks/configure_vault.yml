@@ -41,3 +41,12 @@
       - 204
   when:
     - 'vault_kv_secrets.path + "/" not in vault_status_kv_secrets_engine.json.data'
+
+- name: create policies
+  include_tasks:
+    file: create_policy.yml
+  loop: "{{ policies }}"
+  loop_control:
+    loop_var: policy
+  when:
+    - policies is defined

@@ -90,6 +90,36 @@ Available variables are listed below along with default values (see `defaults\ma
   Systemd service can be created to automatically unseal vault whenever vault service is started or restarted. To enable it, set `vault_unseal_service` to true. Oneshot `vault-unseal`. This service also uses `vault_keys_output` file.
 
 
+- KV secrets engine
+
+  KV version 2 secret engine can be automatically enabled providing the following variables
+
+  ```yml
+  vault_kv_secrets:
+    path: secret
+  ```
+
+  KV version 2 will be anabled at path `secret`
+
+
+- Policies
+
+  ACL policies can be automatically configured, providing a name and the hcl content.
+
+  ```yml
+  policies:
+    - name: write
+      hcl: |
+        path "secret/*" {
+          capabilities = [ "create", "read", "update", "delete", "list", "patch" ]
+        }
+    - name: read
+      hcl: |
+        path "secret/*" {
+          capabilities = [ "read" ]
+        }
+  ```
+
 Dependencies
 ------------
 
@@ -99,7 +129,7 @@ Example Playbook
 ----------------
 
 The following playbook install and configure vault, enabling TLS and generating custom CA signed SSL certificates.
-It also initialize and unseal Vault.
+It initializes and unseals Vault. It also enable KV version 2 at `secret` path and create a couple of polocies (`read` and `write`)
 
 ```yml
 ---
@@ -145,6 +175,22 @@ It also initialize and unseal Vault.
       vault_unseal_service: true
       tls_skip_verify: true
       display_init_response: true
+      # Configure KV
+      vault_kv_secrets:
+        path: secret
+
+      # Policies
+      policies:
+        - name: write
+          hcl: |
+            path "secret/*" {
+              capabilities = [ "create", "read", "update", "delete", "list", "patch" ]
+            }
+        - name: read
+          hcl: |
+            path "secret/*" {
+              capabilities = [ "read" ]
+            }      
 ```
 
 `pre-tasks` section include tasks to generate a custom CA, and vault's private key and  certificate and load them into `vault_key`, `vault_cert` and `vault-ca` variables.
