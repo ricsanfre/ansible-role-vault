@@ -112,13 +112,13 @@
     - Reload vault systemd
     - Restart vault
 
+- name: Flush handlers
+  meta: flush_handlers
+
 - name: Ensure vault is started at boot
   service:
     name: vault
     enabled: true
-
-- name: Flush handlers
-  meta: flush_handlers
 
 - name: Initialize Vault
   include_tasks: initialize_vault.yml
