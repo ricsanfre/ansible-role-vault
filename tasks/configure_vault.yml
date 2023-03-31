@@ -42,7 +42,7 @@
   when:
     - 'vault_kv_secrets.path + "/" not in vault_status_kv_secrets_engine.json.data'
 
-- name: create policies
+- name: Create policies
   include_tasks:
     file: create_policy.yml
   loop: "{{ policies }}"
