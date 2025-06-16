@@ -29,7 +29,7 @@ initialized=""
 while [ -z "$initialized" ]
 do
   sleep 10
-  echo "$(timestamp): Waiting for vautl to start..." | tee -a $LOG
+  echo "$(timestamp): Waiting for vault to start..." | tee -a $LOG
   initialized=$(curl $CURL_PARAMS $URL/v1/sys/health | jq '.initialized')
 done
 
