@@ -1,18 +1,18 @@
 ---
 - name: Create vault group
-  group:
+  ansible.builtin.group:
     name: "{{ vault_group }}"
     state: present
 
 - name: Create vault user
-  user:
+  ansible.builtin.user:
     name: "{{ vault_user }}"
     group: "{{ vault_group }}"
     system: "yes"
     shell: "/usr/sbin/nologin"
 
 - name: Check Vault installation
-  shell: command -v vault  # noqa command-instead-of-shell  # command is a shell builtin
+  ansible.builtin.shell: command -v vault  # noqa command-instead-of-shell  # command is a shell builtin
   environment:
     PATH: "{{ vault_bin_path }}:{{ ansible_env.PATH }}"
   register: vault_installation
@@ -21,7 +21,7 @@
   check_mode: false
 
 - name: Get installed Vault version
-  shell: |
+  ansible.builtin.shell: |
     set -o pipefail
     {{ vault_installation.stdout }} -version | cut -d' ' -f2 | tr -d 'v'
   args:
@@ -32,21 +32,21 @@
   register: installed_vault_version
 
 - name: Compute if installation is required
-  set_fact:
+  ansible.builtin.set_fact:
     installation_required: "{{ vault_installation is failed or installed_vault_version.stdout != vault_version }}"
 
 - name: Install vault binary
-  include_tasks: install_vault.yml
+  ansible.builtin.include_tasks: install_vault.yml
   when: installation_required
 
 - name: Create directories
   become: true
-  file:
+  ansible.builtin.file:
     dest: "{{ item }}"
     state: directory
     owner: "{{ vault_user }}"
     group: "{{ vault_group }}"
-    mode: 0750
+    mode: "0750"
   with_items:
     - "{{ vault_config_path }}"
     - "{{ vault_tls_path }}"
@@ -57,7 +57,7 @@
 
 - name: Vault main configuration
   become: true
-  template:
+  ansible.builtin.template:
     src: "vault_main_configuration.hcl.j2"
     dest: "{{ vault_main_config }}"
     owner: "{{ vault_user }}"
@@ -69,67 +69,67 @@
     - Reload vault systemd
 
 - name: Copy TLS private key file
-  copy:
+  ansible.builtin.copy:
     dest: "{{ vault_tls_path }}/vault.key"
     content: "{{ vault_key }}"
     owner: "{{ vault_user }}"
     group: "{{ vault_group }}"
-    mode: 0644
+    mode: "0644"
   become: true
   when: vault_enable_tls
   notify: Restart vault
 
 - name: Copy cert file
-  copy:
+  ansible.builtin.copy:
     dest: "{{ vault_tls_path }}/vault.crt"
     content: "{{ vault_cert }}"
     owner: "{{ vault_user }}"
     group: "{{ vault_group }}"
-    mode: 0644
+    mode: "0644"
   become: true
   when: vault_enable_tls
   notify: Restart vault
 
 - name: Copy CA cert file
-  copy:
+  ansible.builtin.copy:
     dest: "{{ vault_tls_path }}/vault-ca.crt"
     content: "{{ vault_ca }}"
     owner: "{{ vault_user }}"
     group: "{{ vault_group }}"
-    mode: 0644
+    mode: "0644"
   become: true
   when: vault_enable_tls and custom_ca
   notify: Restart vault
 
 - name: Create the Vault server systemd config
-  template:
+  ansible.builtin.template:
     src: vault.service.j2
     dest: "/etc/systemd/system/vault.service"
     owner: "root"
     group: "root"
-    mode: 0644
+    mode: "0644"
   notify:
     - Reload vault systemd
     - Restart vault
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Ensure vault is started at boot
-  service:
+  ansible.builtin.service:
     name: vault
     enabled: true
 
 - name: Initialize Vault
-  include_tasks: initialize_vault.yml
+  ansible.builtin.include_tasks: initialize_vault.yml
   when: vault_init
 
 - name: Useal Vault
-  include_tasks: unseal_vault.yml
+  ansible.builtin.include_tasks: unseal_vault.yml
   when: vault_unseal
 
 - name: Install unseal service
-  include_tasks: install_unseal_service.yml
+  ansible.builtin.include_tasks: install_unseal_service.yml
   when: vault_unseal_service
 
 - name: Run configuration tasks

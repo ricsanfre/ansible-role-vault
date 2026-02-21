@@ -14,20 +14,20 @@
 
   pre_tasks:
     - name: Generate custom CA
-      include_tasks: tasks/generate_custom_ca.yml
+      ansible.builtin.include_tasks: tasks/generate_custom_ca.yml
       args:
         apply:
           delegate_to: localhost
           become: false
     - name: Generate customCA-signed SSL certificates for minio
-      include_tasks: tasks/generate_ca_signed_cert.yml
+      ansible.builtin.include_tasks: tasks/generate_ca_signed_cert.yml
       args:
         apply:
           delegate_to: localhost
           become: false
 
     - name: Load tls key and cert
-      set_fact:
+      ansible.builtin.set_fact:
         vault_key: "{{ lookup('file', 'certificates/' + server_hostname + '.key') }}"
         vault_cert: "{{ lookup('file', 'certificates/' + server_hostname + '.pem') }}"
         vault_ca: "{{ lookup('file', 'certificates/CA.pem') }}"
@@ -63,20 +63,20 @@
 
     - name: Insert http(s) export in dotfile
       become: true
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: ~{{ ansible_user }}/.bashrc
         regexp: "^export VAULT_ADDR="
         line: "export VAULT_ADDR='https://vault.ricsanfre.com:8200'"
         owner: "{{ ansible_user }}"
         create: true
-        mode: 0644
+        mode: "0644"
 
     - name: Insert CA cert export in dotfile
       become: true
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: ~{{ ansible_user }}/.bashrc
         regexp: "^export VAULT_CACERT="
         line: "export VAULT_CACERT=/etc/vault/tls/vault-ca.crt"
         owner: "{{ ansible_user }}"
         create: true
-        mode: 0644
+        mode: "0644"

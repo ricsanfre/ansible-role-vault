@@ -12,7 +12,7 @@
     #       Acquire::https::proxy "http://10.201.0.1:4567/";
 
     - name: Install utility packages
-      package:
+      ansible.builtin.package:
         name: '{{ item }}'
         state: 'present'
         update_cache: true

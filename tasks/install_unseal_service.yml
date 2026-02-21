@@ -1,7 +1,7 @@
 ---
 
 - name: Install utility packages
-  package:
+  ansible.builtin.package:
     name: '{{ item }}'
     state: 'present'
     update_cache: true
@@ -11,27 +11,27 @@
     - jq
 
 - name: Copy unseal script
-  template:
+  ansible.builtin.template:
     dest: "{{ vault_config_path }}/vault-unseal.sh"
     src: "vault-unseal.sh.j2"
     owner: "{{ vault_user }}"
     group: "{{ vault_group }}"
-    mode: 0744
+    mode: "0744"
   become: true
 
 - name: Create the Vault unseal service systemd config
-  template:
+  ansible.builtin.template:
     src: vault-unseal.service.j2
     dest: "/etc/systemd/system/vault-unseal.service"
     owner: "root"
     group: "root"
-    mode: 0644
+    mode: "0644"
   become: true
   notify:
     - Reload vault-unseal systemd
 
 - name: Ensure vault-unseal is started at boot
-  service:
+  ansible.builtin.service:
     name: vault-unseal
     enabled: true
   become: true
