@@ -1,0 +1,19 @@
+[project]
+name = "ricsanfre-vault-role-dev"
+version = "0.1.0"
+description = "Development tooling environment for ricsanfre.vault Ansible role"
+requires-python = ">=3.10"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "ansible",
+  "ansible-lint",
+  "yamllint",
+  "molecule",
+  "molecule-plugins[docker]",
+  "docker",
+]
+
+[tool.uv]
+default-groups = ["dev"]
