@@ -1,7 +1,7 @@
 Ansible Role: Hashicorp Vault Server Installation and Configuration
 =========
 
-This role install and configure [Hashicorp Vautl](https://www.vaultproject.io/) in a linux server.
+This role install and configure [Hashicorp Vault](https://www.vaultproject.io/) in a linux server.
 
 
 Requirements

@@ -20,7 +20,7 @@ vault_policy_path: /etc/vault/policy
 vault_data_path: /var/lib/vault
 vault_log_path: /var/log/vault
 
-# Vautl config
+# Vault config
 vault_main_config: "{{ vault_config_path }}/vault_main.hcl"
 vault_log: "{{ vault_log_path }}/vault.log"
 vault_http_proxy: ""
@@ -55,7 +55,7 @@ vault_key_threshold: 1
 vault_keys_output: "{{ vault_config_path }}/unseal.json"
 display_init_response: false
 
-# Unseal vautl and install vault unseal service
+# Unseal vault and install vault unseal service
 vault_unseal: false
 vault_unseal_service: false
 
