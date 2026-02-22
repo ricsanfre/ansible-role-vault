@@ -8,7 +8,7 @@
 #   501 if not initialized
 #   503 if sealed
 - name: Check if vault it initalized
-  uri:
+  ansible.builtin.uri:
     url: "{{ vault_api_dns_url }}/v1/sys/health"
     validate_certs: "{{ tls_skip_verify | ternary('false', 'true') }}"
     status_code: 200,429,472,501,503
@@ -22,7 +22,7 @@
     - vault_health_response.status == 501
   block:
     - name: Vault Init
-      uri:
+      ansible.builtin.uri:
         url: "{{ vault_api_dns_url }}/v1/sys/init"
         body:
           secret_shares: "{{ vault_key_shares }}"
@@ -33,12 +33,12 @@
       register: init_vault_response
 
     - name: Save vault root token and keys
-      set_fact:
+      ansible.builtin.set_fact:
         vault_root_token: "{{ init_vault_response.json.root_token }}"
         vault_keys: "{{ init_vault_response.json.keys_base64 }}"
 
     - name: Copy keys
-      copy:
+      ansible.builtin.copy:
         content: "{{ init_vault_response.json }}"
         dest: "{{ vault_keys_output }}"
         owner: "{{ vault_user }}"
@@ -46,11 +46,11 @@
         mode: "0600"
 
     - name: Display vault root token
-      debug:
+      ansible.builtin.debug:
         msg: "Root Token: {{ vault_root_token }}"
       when: display_init_response | bool
 
     - name: Display vault keys
-      debug:
+      ansible.builtin.debug:
         msg: "Vault keys: {{ vault_keys }}"
       when: display_init_response | bool

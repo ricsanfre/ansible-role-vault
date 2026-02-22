@@ -1,14 +1,14 @@
 ---
 
 - name: Load root token from file
-  command: "jq -r '.root_token' {{ vault_keys_output }}"
+  ansible.builtin.command: "jq -r '.root_token' {{ vault_keys_output }}"
   register: root_token
   become: true
   changed_when: false
   when: vault_root_token is not defined
 
 - name: Set token variable
-  set_fact:
+  ansible.builtin.set_fact:
     vault_root_token: "{{ root_token.stdout }}"
   when: vault_root_token is not defined
 
@@ -43,7 +43,7 @@
     - 'vault_kv_secrets.path + "/" not in vault_status_kv_secrets_engine.json.data'
 
 - name: Create policies
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: create_policy.yml
   loop: "{{ policies }}"
   loop_control:

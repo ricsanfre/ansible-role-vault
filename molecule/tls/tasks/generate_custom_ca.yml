@@ -1,13 +1,13 @@
 ---
 - name: Create CA key
-  openssl_privatekey:
+  community.crypto.openssl_privatekey:
     path: certificates/CA.key
     size: "{{ ssl_key_size | int }}"
-    mode: 0644
+    mode: "0644"
   register: ca_key
 
 - name: Create the CA CSR
-  openssl_csr:
+  community.crypto.openssl_csr:
     privatekey_path: certificates/CA.key
     common_name: Ricsanfre CA
     use_common_name_for_san: false  # since we do not specify SANs, don't use CN as a SAN
@@ -21,7 +21,7 @@
   register: ca_csr
 
 - name: Sign the CA CSR
-  openssl_certificate:
+  community.crypto.x509_certificate:
     path: certificates/CA.pem
     csr_path: certificates/CA.csr
     privatekey_path: certificates/CA.key

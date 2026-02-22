@@ -39,9 +39,9 @@ vault_dns: ""
 
 vault_port: 8200
 vault_protocol: "{% if vault_enable_tls %}https{% else %}http{% endif %}"
-vault_iface: "{{ ansible_default_ipv4.interface }}"
+vault_iface: "{{ ansible_facts['default_ipv4']['interface'] }}"
 vault_hostname: "{{ vault_dns | default(inventory_hostname, true) }}"
-vault_address: "{{ hostvars[inventory_hostname]['ansible_' + vault_iface]['ipv4']['address'] }}"
+vault_address: "{{ hostvars[inventory_hostname]['ansible_facts'][vault_iface]['ipv4']['address'] }}"
 vault_cluster_address: "{{ vault_address }}:{{ (vault_port | int) + 1 }}"
 vault_cluster_url: "{{ vault_protocol }}://{{ vault_cluster_address }}"
 vault_api_url: "{{ vault_protocol }}://{{ vault_address }}:{{ vault_port }}"
