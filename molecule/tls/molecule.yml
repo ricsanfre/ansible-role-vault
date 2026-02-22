@@ -12,7 +12,8 @@ platforms:
     image: "ricsanfre/docker-${MOLECULE_DISTRO:-ubuntu}-ansible:${MOLECULE_RELEASE:-latest}"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
     tmpfs:
       - /tmp
       - /run
@@ -27,13 +28,6 @@ platforms:
       - 0.0.0.0:8201:8201/tcp
 provisioner:
   name: ansible
-  env:
-    ANSIBLE_REMOTE_TMP: /tmp/.ansible/tmp
-    ANSIBLE_LOCAL_TEMP: /tmp/.ansible/tmp
-  config_options:
-    defaults:
-      remote_tmp: /tmp/.ansible/tmp
-      local_tmp: /tmp/.ansible/tmp
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
 verifier:
