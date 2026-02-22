@@ -14,26 +14,26 @@
 - name: Check Vault installation
   ansible.builtin.shell: command -v vault  # noqa command-instead-of-shell  # command is a shell builtin
   environment:
-    PATH: "{{ vault_bin_path }}:{{ ansible_env.PATH }}"
+    PATH: "{{ vault_bin_path }}:{{ ansible_facts['env']['PATH'] }}"
   register: vault_installation
   changed_when: false
-  ignore_errors: true
+  failed_when: false
   check_mode: false
 
 - name: Get installed Vault version
   ansible.builtin.shell: |
     set -o pipefail
-    {{ vault_installation.stdout }} -version | cut -d' ' -f2 | tr -d 'v'
+    {{ vault_bin_path }}/vault -version | cut -d' ' -f2 | tr -d 'v'
   args:
     executable: /bin/bash
-  when: not vault_installation is failed
+  when: vault_installation.rc == 0
   changed_when: false
   check_mode: false
   register: installed_vault_version
 
 - name: Compute if installation is required
   ansible.builtin.set_fact:
-    installation_required: "{{ vault_installation is failed or installed_vault_version.stdout != vault_version }}"
+    installation_required: "{{ vault_installation.rc != 0 or installed_vault_version.stdout != vault_version }}"
 
 - name: Install vault binary
   ansible.builtin.include_tasks: install_vault.yml
